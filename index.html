@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cúmulo Estelar Místico</title>
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: radial-gradient(circle at center, #02030a 0%, #000 70%);
+    }
+
+    .universo {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    /* Halo difuso central */
+    .halo {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        background: radial-gradient(circle, rgba(120,180,255,0.25) 0%, rgba(50,100,200,0.15) 40%, transparent 70%);
+        filter: blur(40px);
+        pointer-events: none;
+    }
+
+    /* Polvo interestelar */
+    .polvo {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(rgba(120,160,255,0.15) 1px, transparent 1px);
+        background-size: 3px 3px;
+        opacity: 0.15;
+        pointer-events: none;
+    }
+
+    .estrella {
+        position: absolute;
+        border-radius: 50%;
+        cursor: pointer;
+        animation: titilar 3s infinite ease-in-out alternate;
+        transition: transform 0.3s ease;
+    }
+
+    .estrella:hover {
+        transform: scale(1.5);
+    }
+
+    @keyframes titilar {
+        0% { opacity: 0.4; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+    }
+
+    .mensaje {
+        position: absolute;
+        color: #cde7ff;
+        font-size: 14px;
+        pointer-events: none;
+        text-shadow: 0 0 10px #90e0ef, 0 0 20px #48cae4;
+        animation: flotar 3s ease-out forwards;
+        font-family: Arial, sans-serif;
+    }
+
+    @keyframes flotar {
+        0% { opacity: 0; transform: translateY(0); }
+        20% { opacity: 1; }
+        100% { opacity: 0; transform: translateY(-70px); }
+    }
+</style>
+</head>
+<body>
+
+<div class="universo" id="universo">
+    <div class="halo"></div>
+    <div class="polvo"></div>
+</div>
+
+<script>
+const universo = document.getElementById("universo");
+const cantidad = 140;
+
+const cx = window.innerWidth / 2;
+const cy = window.innerHeight / 2;
+const radioMax = Math.min(window.innerWidth, window.innerHeight) / 4;
+
+let estrellas = [];
+
+for (let i = 0; i < cantidad; i++) {
+
+    const estrella = document.createElement("div");
+    estrella.classList.add("estrella");
+
+    const ang = Math.random() * 2 * Math.PI;
+    const r = radioMax * Math.pow(Math.random(), 1.8);
+
+    const size = Math.random() * 3 + 1;
+    const azul = 200 + Math.floor(Math.random() * 55);
+    const color = `rgb(180, ${azul}, 255)`;
+
+    estrella.style.width = size + "px";
+    estrella.style.height = size + "px";
+    estrella.style.background = color;
+    estrella.style.boxShadow = `
+        0 0 ${size * 2}px ${color},
+        0 0 ${size * 6}px ${color},
+        0 0 ${size * 12}px rgba(100,180,255,0.5)
+    `;
+
+    universo.appendChild(estrella);
+
+    estrellas.push({
+        el: estrella,
+        angulo: ang,
+        radio: r,
+        velocidad: (Math.random() * 0.0005) + 0.0002,
+        size: size
+    });
+
+    estrella.addEventListener("click", (e) => {
+        const mensaje = document.createElement("div");
+        mensaje.classList.add("mensaje");
+        mensaje.innerText = "Te quiero ✨";
+        mensaje.style.left = estrella.style.left;
+        mensaje.style.top = estrella.style.top;
+        universo.appendChild(mensaje);
+        setTimeout(() => mensaje.remove(), 3000);
+    });
+}
+
+/* Movimiento orbital suave */
+function animar() {
+    estrellas.forEach(star => {
+        star.angulo += star.velocidad;
+
+        const x = cx + star.radio * Math.cos(star.angulo);
+        const y = cy + star.radio * Math.sin(star.angulo);
+
+        star.el.style.left = x + "px";
+        star.el.style.top = y + "px";
+    });
+
+    requestAnimationFrame(animar);
+}
+
+animar();
+</script>
+
+</body>
+</html>
